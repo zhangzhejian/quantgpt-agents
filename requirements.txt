@@ -1,0 +1,13 @@
+pandas
+numpy
+langchain
+openai
+pydantic
+python-dotenv==1.0.0
+
+tiktoken
+qstock
+retry
+pyexecjs
+beautifulsoup4
+lxml
