@@ -209,6 +209,7 @@ class PromptGenerator(object):
             f"\n2. You should find the main elements/event/industries have relationship with the company."
             f"\n3. Don't include any stock techinical indicators such as:'涨停','大涨','市盈率，市值'"
             f"\n4. Don't explain the reasons, just give the answer."
+            f"\n5. 不要使用例如：'成交量',‘投资者’, ‘换手率’, ‘成交额’, ‘振幅’ 等股票价格结果相关的实体."
         )
         prompt += f"\n\n**NEWS List**:\n\n["
         for index in range(len(news_dict)):

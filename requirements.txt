@@ -11,3 +11,5 @@ retry
 pyexecjs
 beautifulsoup4
 lxml
+
+faiss_cpu==1.7.3

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from qstock_searcher import get_stock_df
 import schemas
-
+import datetime
 MEAN_PRICE_LONG_PERIOD=30
 MEAN_PRICE_SHORT_PERIOD=10
 
@@ -81,7 +81,7 @@ class StockAnalyzer(object):
         return df
 
 
-    def generate_tech_infos(self, code) -> schemas.StockTechInfo:
+    def generate_tech_infos(self, code:str,date:datetime ) -> schemas.StockTechInfo:
         df= get_stock_df(code) 
         df = self.get_bollinger_bands(df)
         df = self.cal_macd(df)

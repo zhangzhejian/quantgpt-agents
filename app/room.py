@@ -62,10 +62,9 @@ class Room(object):
         index_store:IndexStore = IndexStore()
         if os.path.exists('index_store.json'):
             index_store.load_from_file('index_store.json')
-            print(index_store.chunks)
-            return
+            return index_store
         (news_dict_list,extracted_from_news) = extract_from_stock_news_batch(self.code)
-        print(len(news_dict_list), len(extracted_from_news))
+        print(len(news_dict_list), len(extracted_from_news))        
         index_store:IndexStore = IndexStore()
         start_ = time.time()
         for i in range(len(news_dict_list)):
@@ -87,6 +86,7 @@ class Room(object):
                 content=content,
                 index_node_ids = [item.id for item in index_nodes]
             ))
+        index_store.init_vectodstore()
         print(time.time()-start_)
         # print([item.dict() for item in index_store.chunks])
         # print(index_store.node_to_chunk)

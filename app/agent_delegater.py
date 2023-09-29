@@ -1,6 +1,6 @@
 import numpy as np
 import schemas
-from agents import BeginnerTrader, FundManager,SeniorTrader
+from agents import BaseTraderAgent,BeginnerTrader, FundManager,SeniorTrader
 from typing import List
 from prompt_generator import prompt_generator
 from utils import generate_single_message
@@ -9,7 +9,7 @@ from utils import generate_single_message
 class BaseAgentDelegater():
     def __init__(self):
         clss = [SeniorTrader, BeginnerTrader, FundManager]
-        self.agents = []
+        self.agents:List[BaseTraderAgent] = []
         for cls in clss:
             self.agents += self._init_agents(cls=cls, size=5)
         self._init_agents_property(
@@ -48,13 +48,16 @@ class BaseAgentDelegater():
             cost, cash, shares = item
             self.agents[index].set_property(cost, cash, shares)
     
-    def predict_belief(self):
+    def predict_belief(self) -> List[schemas.Order]:
         # belief = self.agents[0].predict_belief()
+        order_list = []
         for agent in self.agents:
             belief = agent.predict_belief()
             agent.set_agent_belief(belief)
             orders = agent.plan()
-            print(orders)
+            order_list += orders
+        return order_list
+        
 
     def _init_stock_info(self,fundamental_info_prompt: str, tech_info_prompt:str, price: float):
         for agent in self.agents:

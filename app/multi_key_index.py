@@ -5,6 +5,9 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores.faiss import FAISS
 from dotenv import load_dotenv
 import os
+import faiss
+from langchain.vectorstores.utils import DistanceStrategy
+
 PARSE_FOLDER_PATH = os.path.join(os.getcwd(), 'parse_res')
 load_dotenv()
 openai_api_key= os.getenv('LITELLM_OPENAI_API_KEY')
@@ -108,8 +111,8 @@ class IndexStore():
         self.node_to_chunk = index_store.get('node_to_chunk')
         self.chunk_to_node = index_store.get('chunk_to_node')
         self.chunks = [TextChunk.parse_obj(chunk) for chunk in index_store.get('chunks', [])]
-        self.index_nodes = [IndexNode.parse_obj(node) for node in index_store.get('nodes', [])]
-        return
+        self.index_nodes = [IndexNode.parse_obj(node) for node in index_store.get('index_nodes', [])]
+        self.init_vectodstore()
     
     def add_node_embeddings(self):
         texts = [item.content for item in self.index_nodes]
@@ -118,7 +121,27 @@ class IndexStore():
             item.embedding=embeddings[index]
 
     def init_vectodstore(self):
-        return
+        print(len(self.index_nodes),len(self.chunks))
+        node_vector_base= FAISS.from_texts(
+            texts = [item.content for item in self.index_nodes],
+            embedding=self.embedding,
+            metadatas=[{'node_id':item.id} for item in self.index_nodes],
+            distance_strategy=DistanceStrategy.COSINE
+        )
+
+        self.node_vector_store = node_vector_base
+    
+
+    def search_nodes(self,query:str)-> List[IndexNode]:
+        search_result = self.node_vector_store.similarity_search_with_score(
+            query=query,
+            threshold=0.5
+        )
+        print(search_result)
+        index_nodes = [self.find_node(node_id=doc.metadata['node_id']) for doc,score in search_result]
+        return index_nodes
+
+
 
 
 # class IndexCollections(BaseModel):

@@ -83,7 +83,7 @@ class BaseTraderAgent(object):
         # print(prompt)
         completion=generate_single_message(prompt=prompt, temperature=1.2)
         completion = completion.replace("'", '"')
-        print(completion)
+        # print(completion)
         # json_obj = json.loads(completion)
         # print(json_obj)
         response_obj = schemas.ResponseAgent.parse_raw(completion)
