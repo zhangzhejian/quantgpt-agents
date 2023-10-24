@@ -2,7 +2,6 @@ import numpy as np
 import schemas
 from agents import BaseTraderAgent,BeginnerTrader, FundManager,SeniorTrader
 from typing import List
-from prompt_generator import prompt_generator
 from utils import generate_single_message
 
 
@@ -22,6 +21,10 @@ class BaseAgentDelegater():
         return
     
     
+    def set_agents_prompt_func(self, prompt_func:callable):
+        for agent in self.agents:
+            agent.set_prompt_func(prompt_func)
+
     def generate_normal_distribution(self, mean, sigma, size):
         """
         Generate a normal distribution with a custom mean and standard deviation (sigma).
@@ -49,7 +52,6 @@ class BaseAgentDelegater():
             self.agents[index].set_property(cost, cash, shares)
     
     def predict_belief(self) -> List[schemas.Order]:
-        # belief = self.agents[0].predict_belief()
         order_list = []
         for agent in self.agents:
             belief = agent.predict_belief()
@@ -57,42 +59,24 @@ class BaseAgentDelegater():
             orders = agent.plan()
             order_list += orders
         return order_list
+    
+    async def apredict_believes(self):
+        order_list = []
+        for agent in self.agents:
+            belief = await agent.apredict_believes()
+            agent.set_agent_belief(belief)
+            orders = agent.plan()
+            order_list += orders
+        return order_list
         
 
-    def _init_stock_info(self,fundamental_info_prompt: str, tech_info_prompt:str, price: float):
+    def _init_stock_info(self,fundamental_info_prompt: str, tech_info_prompt:str, price: float, news_info: str):
         for agent in self.agents:
             agent.set_stock_infos(
                 fundamental_info_prompt=fundamental_info_prompt,
-                tech_info_prompt=tech_info_prompt
+                tech_info_prompt=tech_info_prompt,
+                news_info=news_info
             )
             agent.set_price(price)
     
-
-    def simulate_trading(self, orders:List[schemas.Order]):
-        cur_price,cur_share=0,0
-        while orders:
-            order = orders.pip()
-            if order.action =='buy':
-                if order.price > cur_price :
-                    cur_price = order.price
-                cur_share += order.share
-            else:
-                cur_share -= order.share
             
-
-
-    
-
-
-if __name__ == "__main__":
-    from room import Room
-    room = Room()
-    delegater = BaseAgentDelegater()
-    # delegater._init_agents(cls = BeginnerTrader, size = 10)
-    print(delegater.agents)
-    delegater._init_stock_info(
-        fundamental_info_prompt=room.fundamental_info.to_prompt(),
-        tech_info_prompt=room.stock_tech_info.to_prompt(),
-        price = room.stock_tech_info.get_price_by_freq_and_index()
-    )
-    delegater.predict_belief()

@@ -3,6 +3,49 @@ from datetime import datetime
 from typing import List, Optional
 from enum import Enum
 
+risk_tolerance_map:dict = {
+    0: "Avoids all risk (Equivalent to keeping money under a mattress)",
+    1: "Ultra Conservative (Primarily in ultra-safe instruments like treasury bills)",
+    2: "Very Conservative (High allocation to bonds and other fixed-income securities)",
+    3: "Conservative (Mainly bonds, with a small allocation to equities or other slightly riskier assets)",
+    4: "Mildly Conservative (Balanced between bonds and equities)",
+    5: "Moderate (Even split between equities and bonds or other fixed-income securities)",
+    6: "Mildly Aggressive (Higher allocation to equities with some bonds and possibly alternative assets)",
+    7: "Aggressive (Mainly equities, with a minimal bond or fixed-income allocation)",
+    8: "Very Aggressive (High concentration in equities, potentially including riskier sectors or emerging markets)",
+    9: "Extremely Aggressive (Potential for high-risk ventures, speculative assets, or leveraged investments)",
+    10: "Speculative (Full exposure to highly speculative investments or betting on single outcomes)"
+}
+
+greed_map:dict= {
+    0: "Not greedy at all",
+    1: "Very slightly greedy",
+    2: "Slightly greedy",
+    3: "Mildly greedy",
+    4: "Moderately greedy",
+    5: "Average greediness",
+    6: "Above average greedy",
+    7: "Quite greedy",
+    8: "Very greedy",
+    9: "Extremely greedy",
+    10: "Ultimate greed",
+}
+
+aggressiveness_map:dict = {
+    0: "Ultra Conservative",
+    1: "Very Conservative",
+    2: "Conservative",
+    3: "Mildly Conservative",
+    4: "Moderate",
+    5: "Balanced",
+    6: "Mildly Aggressive",
+    7: "Aggressive",
+    8: "Very Aggressive",
+    9: "Extremely Aggressive",
+    10: "All-in Aggressive",
+}
+
+
 class AgentRole(Enum):
     BEGINNER = "Beginner Trader"
     SENIOR = "Senior Trader"
@@ -160,9 +203,9 @@ class AgentInfo(BaseModel):
         prompt += f"Role:{self.role.value}\n"
         if self.investment_style:
             prompt += f"Investment style: {self.investment_style.value} \n"
-        prompt += f"Risk tolerance (0-10): {self.risk_tolerance}\n"
-        prompt += f"Greediness (0-10): {self.greed}\n"
-        prompt += f"Investment aggressiveness (0-10): {self.investment_aggressiveness}\n"
+        prompt += f"Risk tolerance (0-10): {self.risk_tolerance} {risk_tolerance_map[self.risk_tolerance]}\n"
+        prompt += f"Greediness (0-10): {self.greed} {greed_map[self.greed]}\n"
+        prompt += f"Investment aggressiveness (0-10): {self.investment_aggressiveness} {aggressiveness_map[self.investment_aggressiveness]}\n"
         return prompt
 
 
@@ -189,26 +232,4 @@ class ResponseAgent(BaseModel):
     decisions: List[AgentDecision]
 
 
-# class Message(BaseModel):
-#     """list[<role>: <content>]"""
-#     content: str
-#     role: str = field(default='user')  # system / user / assistant
-#     cause_by: Type["Action"] = field(default="")
-#     sent_from: str = field(default="")
-#     send_to: str = field(default="")
 
-#     def __str__(self):
-#         # prefix = '-'.join([self.role, str(self.cause_by)])
-#         return f"{self.role}: {self.content}"
-
-#     def __repr__(self):
-#         return self.__str__()
-
-#     def to_dict(self) -> dict:
-#         return {
-#             "role": self.role,
-#             "content": self.content
-#         }
-
-
-    

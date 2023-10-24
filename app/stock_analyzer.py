@@ -81,8 +81,9 @@ class StockAnalyzer(object):
         return df
 
 
-    def generate_tech_infos(self, code:str,date:datetime ) -> schemas.StockTechInfo:
-        df= get_stock_df(code) 
+    def generate_tech_infos(self, code:str,date:datetime = None ) -> schemas.StockTechInfo:
+        df= get_stock_df(code,date=date) 
+        df.to_csv('stock_data.csv')
         df = self.get_bollinger_bands(df)
         df = self.cal_macd(df)
         df = self.get_mean_prices(df)

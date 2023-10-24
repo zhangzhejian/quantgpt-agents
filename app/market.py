@@ -6,7 +6,7 @@ class StockExchange:
     def __init__(self):
         self.buy_orders:List[Order] = []
         self.sell_orders:List[Order]= []
-        self.last_traded_price = None  # 用于存储最后的成交价格
+        self.last_traded_price = None  # to store the last matched price
 
     def add_order(self, order: Order):
         if order.action == 'buy':
@@ -52,5 +52,13 @@ class StockExchange:
 
         return matches
 
+    def get_last_price(self):
+        """
+        if there is still buy orders, the max one should be the last price 
+        """
+        if self.buy_orders and len(self.buy_orders) > 0:
+            return max([item.price for item in self.buy_orders])
+        return self.last_traded_price
+            
 
     

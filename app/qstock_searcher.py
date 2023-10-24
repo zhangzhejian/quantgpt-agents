@@ -3,13 +3,16 @@ sys.path.append('../')
 import qstock as qs
 from typing import List
 import utils, json
-from prompt_generator import prompt_generator
+import prompt_generator
 from langchain.callbacks import get_openai_callback
 from datetime import datetime
 import pandas as pd
 
-def get_stock_df(code):
-    return qs.get_data(code)
+def get_stock_df(code, date: datetime=None):
+    return qs.get_data(code, end=date.strftime('%Y%m%d') if date else None)
+
+def get_stock_news(code, date: datetime=None):
+    return qs.news_data('个股', code=code, end=date.strftime('%Y%m%d') if date else None)
 
 def get_stock_name(code):
     df = qs.get_data(code)
